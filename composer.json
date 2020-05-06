@@ -1,0 +1,23 @@
+{
+    "name": "nhayaht/wp-amazon-s3-object-storage",
+    "description": "A plugin for uploading wordpress files to amazon s3 and other similar object storage services",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Nasim Hayath",
+            "email": "nhayath@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        },
+        "files": [
+            "src/helpers.php",
+            "src/wordpress.php"
+        ]
+    },
+    "require": {
+        "aws/aws-sdk-php": "^3.137"
+    }
+}
