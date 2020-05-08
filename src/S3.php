@@ -20,10 +20,9 @@ class S3{
 
 	    	if( empty($params['access_key']) ||  empty($params['secret_key']) || empty($params['region']) ){
 	    		throw new \Exception('AWS S3 Pro configuration is not set');
-	    	}
-
-	    	static::$s3Client = new S3Client([
-			    "endpoint" => $params['endpoint'],
+            }
+            
+            $client = [
 			    "s3ForcePathStyle" => true,
 			    "version" => "latest",
 			    "region" => $params['region'],
@@ -32,7 +31,15 @@ class S3{
 			        "key" => $params['access_key'],
 			        "secret" => $params['secret_key']
 			    ]
-			]); 
+            ];
+
+            if(!empty($params['endpoint'])){
+                
+                $client["endpoint"] = $params['endpoint'];
+         
+            }
+
+	    	static::$s3Client = new S3Client($client); 
 	    	
 	    } catch (\Exception $e) {
 	    	_s3p_error_notice($e->getMessage());

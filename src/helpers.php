@@ -17,7 +17,7 @@ function _s3p_view($file, $data = null){
 }
 
 function _s3p_error_notice($message){
-	error_log(json_encode($message));
+	_jlog($message);
 	add_action( 'admin_notices', function() use (&$message){
 		?>
 	    <div class="notice error my-acf-notice is-dismissible" >
@@ -64,30 +64,51 @@ function _s3p_generate_key($dirname, $file){
 	return $dirname . '/' . $file;
 }
 
-function _s3p_get_objects($metadata, $action='put'){
+function _s3p_get_objects(&$metadata, $action='put'){
 
 	$medias = [];
 
     // upload dir
-    $upload_dir = WP_CONTENT_DIR . '/uploads/';
+    $file = App\Reg::get('file');
 
     // get file path
-    $pathinfo = pathinfo($metadata['file']);
+    $pathinfo = pathinfo($file['file']);
+    $upload_dir = $pathinfo['dirname'];
+    $key_base = explode('/uploads/', $upload_dir)[1];
+    $metadata['key_base'] = $key_base;
 
-   	$ContentType = $action == 'put' ? App\Reg::get('ContentType') : '';
+   	$ContentType = $action == 'put' ? $file['type'] : '';
 
     $path = $upload_dir . $pathinfo['dirname'];
-    array_push($medias, ['Key' => _s3p_generate_key($pathinfo['dirname'], $pathinfo['basename']), 'SourceFile' => $upload_dir . $metadata['file'], 'ContentType' => $ContentType]);
+    array_push($medias, ['Key' => _s3p_generate_key($key_base, $pathinfo['basename']), 'SourceFile' => $file['file'], 'ContentType' => $ContentType]);
 
     if($metadata['sizes']){
         foreach($metadata['sizes'] as $k => $v){
-            $key = _s3p_generate_key($pathinfo['dirname'], $v['file']);
-            $source = $upload_dir . $pathinfo['dirname'] . '/' . $v['file'];
+            $key = _s3p_generate_key($key_base, $v['file']);
+            $source = $upload_dir . '/' . $v['file'];
             array_push($medias, ['Key' => $key, 'SourceFile' => $source, 'ContentType' => $ContentType]);
         }
     }
 
     return $medias;
+}
+
+function _s3p_objects_to_delete($metadata){
+    $objects = [];
+
+    // get file path
+    $pathinfo = pathinfo($metadata['file']);
+
+    array_push($objects, ['Key' => _s3p_generate_key($metadata['key_base'], $pathinfo['basename'])]);
+
+    if($metadata['sizes']){
+        foreach($metadata['sizes'] as $k => $v){
+            $key = _s3p_generate_key($metadata['key_base'], $v['file']);
+            array_push($objects, ['Key' => $key]);
+        }
+    }
+
+    return $objects;
 }
 
 function _s3p_delete_local_copies($objects){

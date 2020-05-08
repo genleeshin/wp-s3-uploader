@@ -138,9 +138,12 @@ function aws_s3_pro_option_section_callback(  ) {
 
 function aws_s3_pro_option_page_render(  ) {
     ?>
+    <h1>WP S3 Uploader Settings</h1>
+    <?php if(defined('WP_S3_UPLOADER')){
+        echo '<h4 style="color: green; font-size: 1.2rem;">Using paramteters from the config file</h4>';
+        return;
+    }?>
     <form action='options.php' method='post'>
-
-        <h2>Sitepoint Settings API Admin Page</h2>
 
         <?php
         settings_fields( 'aws_s3_pro' );
@@ -149,5 +152,6 @@ function aws_s3_pro_option_page_render(  ) {
         ?>
 
     </form>
-    <?php
+<?php
+
 }
