@@ -1,8 +1,12 @@
 <?php
 /**
  * Plugin Name: WP S3 Uploader
- * Description: Upload file directly to Amazon S3, Minio, Sacleway, Google Cloud Storage and Other S3 compatible object storage providers
+ * Description: Upload files directly to Amazon S3, Minio, Sacleway, Google Cloud Storage and Other S3 compatible object storage providers
  * Author: Nasim Mahmud
+ * Version: 0.01
+ * Requires at least: Wordpress 5.x
+ * Requires PHP: 7.x
+ * Network: true
  */
 require __DIR__.'/vendor/autoload.php';
 
@@ -17,8 +21,12 @@ if(defined('WP_S3_UPLOADER')){
 }else{
     $params = get_option('aws_s3_pro_options', []);
 }
+try {
+    S3::setClient($params);
+} catch (\Exception $e) {
+    _s3p_error_notice('WP S3 Uploader is not configured, <a href="/wp-admin/options-general.php?page=wp-s3-uploader"> Click here</a> to configure');
+}
 
-S3::setClient($params);
 
 //  register settings pages
 if(is_admin()){
@@ -28,6 +36,23 @@ if(is_admin()){
 
     // settings form 
     add_action( 'admin_init', 'aws_s3_pro_options_init' );
+
+    // links to plugin settings page
+    add_filter( "plugin_action_links_" . plugin_basename(__FILE__), function($links){
+        $settings_link = '<a href="/wp-admin/options-general.php?page=wp-s3-uploader">' . __( 'Settings' ) . '</a>';
+
+        array_push( $links, $settings_link );
+        return $links;
+    } );
+
+    // on uninstall
+    register_uninstall_hook(__FILE__, function(){
+        if(is_multisite()){
+            delete_site_option('aws_s3_pro_options');
+        }else{
+            delete_option('aws_s3_pro_options');
+        }
+    });
 }
 
 if(isset($params['access_key'])){

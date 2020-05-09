@@ -19,7 +19,7 @@ class S3{
 	    	static::$params = $params;
 
 	    	if( empty($params['access_key']) ||  empty($params['secret_key']) || empty($params['region']) ){
-	    		throw new \Exception('AWS S3 Pro configuration is not set');
+	    		throw new \Exception('Invalid configuration');
             }
             
             $client = [
@@ -42,7 +42,7 @@ class S3{
 	    	static::$s3Client = new S3Client($client); 
 	    	
 	    } catch (\Exception $e) {
-	    	_s3p_error_notice($e->getMessage());
+	    	throw $e;
 	    }
 	}
 

@@ -2,7 +2,8 @@
 
 function aws_s3_pro_option_page(  ) {
     // @params (page_title, menu_title, capability, menu_slug, render callback, position)
-    add_options_page( 'AWS S3', 'AWS S3 Settings', 'manage_options', 'aws-s3-pro-settings', 'aws_s3_pro_option_page_render' );
+    add_options_page( 'WP S3 Uploader', 'WP S3 Uploader', 'manage_options', 'wp-s3-uploader', 'aws_s3_pro_option_page_render' );
+
 }
 
 function aws_s3_pro_options_init(  ) {
