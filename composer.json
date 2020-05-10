@@ -1,11 +1,11 @@
 {
-    "name": "nhayaht/wp-amazon-s3-object-storage",
-    "description": "A plugin for uploading wordpress files to amazon s3 and other similar object storage services",
-    "type": "project",
+    "name": "genleeshin/wp-s3-uploader",
+    "description": "A Wordpress plugin that automatically uploads media files to amazon s3, minio, digitalocean space and other s3 compatible object storage service providers",
+    "type": "plugin",
     "authors": [
         {
             "name": "Nasim Hayath",
-            "email": "nhayath@gmail.com"
+            "email": "genleeshin@gmail.com"
         }
     ],
     "autoload": {

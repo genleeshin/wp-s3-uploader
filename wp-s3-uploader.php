@@ -19,7 +19,7 @@ use App\Reg;
 if(defined('WP_S3_UPLOADER')){
     $params = WP_S3_UPLOADER;
 }else{
-    $params = get_option('aws_s3_pro_options', []);
+    $params = get_option('wp_s3_uploader_options', []);
 }
 try {
     S3::setClient($params);
@@ -32,10 +32,10 @@ try {
 if(is_admin()){
 
     // register settings page
-    add_action( 'admin_menu', 'aws_s3_pro_option_page' );
+    add_action( 'admin_menu', 'wp_s3_uploader_option_page' );
 
     // settings form 
-    add_action( 'admin_init', 'aws_s3_pro_options_init' );
+    add_action( 'admin_init', 'wp_s3_uploader_options_init' );
 
     // links to plugin settings page
     add_filter( "plugin_action_links_" . plugin_basename(__FILE__), function($links){
@@ -46,13 +46,7 @@ if(is_admin()){
     } );
 
     // on uninstall
-    register_uninstall_hook(__FILE__, function(){
-        if(is_multisite()){
-            delete_site_option('aws_s3_pro_options');
-        }else{
-            delete_option('aws_s3_pro_options');
-        }
-    });
+    register_uninstall_hook(__FILE__, '_wp_s3_uploader_uninstall');
 }
 
 if(isset($params['access_key'])){

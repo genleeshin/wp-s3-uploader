@@ -1,143 +1,192 @@
 <?php
 
-function aws_s3_pro_option_page(  ) {
+function wp_s3_uploader_option_page(  ) {
     // @params (page_title, menu_title, capability, menu_slug, render callback, position)
-    add_options_page( 'WP S3 Uploader', 'WP S3 Uploader', 'manage_options', 'wp-s3-uploader', 'aws_s3_pro_option_page_render' );
+    add_options_page( 'WP S3 Uploader', 'WP S3 Uploader', 'manage_options', 'wp-s3-uploader', 'wp_s3_uploader_option_page_render' );
 
 }
 
-function aws_s3_pro_options_init(  ) {
+function _wp_s3_uploader_uninstall(){
+    if(is_multisite()){
+        delete_site_option('wp_s3_uploader_options');
+    }else{
+        delete_option('wp_s3_uploader_options');
+    }
+}
+
+function wp_s3_uploader_options_init(  ) {
     // register settings
     // @params (option_group, option_name, args)
-    register_setting( 'aws_s3_pro', 'aws_s3_pro_options' );
+    register_setting( 'wp_s3_uploader', 'wp_s3_uploader_options' );
 
     // add a section
     add_settings_section(
-        'aws_s3_pro_option_section',
+        'wp_s3_uploader_option_section',
         'S3 Settings',
-        'aws_s3_pro_option_section_callback',
-        'aws_s3_pro'
+        'wp_s3_uploader_option_section_callback',
+        'wp_s3_uploader'
     );
 
         // access key
     add_settings_field(
-        'ws_s3_pro_option_access_key',
-        'Access Key',
-        'aws_s3_pro_option_access_key_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_access_key',
+        'Access Key*',
+        'wp_s3_uploader_option_access_key_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
     // access key
     add_settings_field(
-        'ws_s3_pro_option_secret_key',
-        'Secret Key',
-        'aws_s3_pro_option_secret_key_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_secret_key',
+        'Secret Key*',
+        'wp_s3_uploader_option_secret_key_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
 
     // region
     add_settings_field(
-        'ws_s3_pro_option_region',
-        'Region',
-        'aws_s3_pro_option_region_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_region',
+        'Region*',
+        'wp_s3_uploader_option_region_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
 
     // endpoint field
     add_settings_field(
-        'ws_s3_pro_option_endpoint',
+        'wp_s3_uploader_option_endpoint',
         'Endpoint',
-        'aws_s3_pro_option_endpoint_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_endpoint_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
 
     // bucket field
     add_settings_field(
-        'ws_s3_pro_option_bucket',
-        'Bucket Name',
-        'aws_s3_pro_option_bucket_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_bucket',
+        'Bucket Name*',
+        'wp_s3_uploader_option_bucket_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
 
     // url field
     add_settings_field(
-        'ws_s3_pro_option_url',
-        'Public URL',
-        'aws_s3_pro_option_url_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_url',
+        'Bucket URL*',
+        'wp_s3_uploader_option_url_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
 
      // url field
     add_settings_field(
-        'ws_s3_pro_option_delete_local',
+        'wp_s3_uploader_option_delete_local',
         'Delete Local Copy',
-        'aws_s3_pro_option_delete_local_render',
-        'aws_s3_pro',
-        'aws_s3_pro_option_section'
+        'wp_s3_uploader_option_delete_local_render',
+        'wp_s3_uploader',
+        'wp_s3_uploader_option_section'
     );
 }
 
-function aws_s3_pro_option_endpoint_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+// access key
+function wp_s3_uploader_option_access_key_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     ?>
-    <input type='text' name='aws_s3_pro_options[endpoint]' value='<?=$options['endpoint']??''?>' size="60">
+    <input 
+        type='text' 
+        name='wp_s3_uploader_options[access_key]' 
+        value='<?=$options['access_key']??''?>' 
+        placeholder="access key" 
+        size="60">
     <?php
 }
 
-function aws_s3_pro_option_region_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+// secret key
+function wp_s3_uploader_option_secret_key_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     ?>
-    <input type='text' name='aws_s3_pro_options[region]' value='<?=$options['region']??''?>' size="60">
+    <input 
+        type='text' 
+        name='wp_s3_uploader_options[secret_key]' 
+        value='<?=$options['secret_key']??''?>' 
+        placeholder="secret key" 
+        size="60">
     <?php
 }
 
-function aws_s3_pro_option_access_key_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+// region
+function wp_s3_uploader_option_region_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     ?>
-    <input type='text' name='aws_s3_pro_options[access_key]' value='<?=$options['access_key']??''?>' size="60">
+    <input type='text' 
+        name='wp_s3_uploader_options[region]' 
+        value='<?=$options['region']??''?>' 
+        placeholder="region" 
+        size="60">
+
+    <p>- Required for Amazon, DigitalOcean, Scaleway and Google</p>
+    <p>- Put "na" for minio and others that do not require it</p>
     <?php
 }
 
-function aws_s3_pro_option_secret_key_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+// endpoint
+function wp_s3_uploader_option_endpoint_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     ?>
-    <input type='text' name='aws_s3_pro_options[secret_key]' value='<?=$options['secret_key']??''?>' size="60">
+    <input type='text' 
+        name='wp_s3_uploader_options[endpoint]' 
+        value='<?=$options['endpoint']??''?>' 
+        placeholder="endpoint url"  
+        size="60">
+
+    <p class="helper">- Leave empty for amazon</p>
+    <p class="helper">- Required for other providers</p>
     <?php
 }
 
-function aws_s3_pro_option_bucket_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+// bucket name
+function wp_s3_uploader_option_bucket_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     ?>
-    <input type='text' name='aws_s3_pro_options[bucket]' value='<?=$options['bucket']??''?>' size="60" placeholder="bucket name">
+    <input 
+        type='text' name='wp_s3_uploader_options[bucket]' 
+        value='<?=$options['bucket']??''?>' 
+        size="60" 
+        placeholder="bucket name">
     <?php
 }
 
-function aws_s3_pro_option_url_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+// bucket url
+function wp_s3_uploader_option_url_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     ?>
-    <input type='text' name='aws_s3_pro_options[url]' value='<?=$options['url']??''?>' size="60" placeholder="bucket url">
+    <input 
+        type='text' 
+        name='wp_s3_uploader_options[url]' 
+        value='<?=$options['url']??''?>' 
+        size="60" 
+        placeholder="bucket url">
+
+    <p>- For amazon it is usually "https://s3.{REGION}.amazonaws.com/{BUCKET_NAME}"</p>
     <?php
 }
 
-function aws_s3_pro_option_delete_local_render(  ) {
-    $options = get_option( 'aws_s3_pro_options' );
+function wp_s3_uploader_option_delete_local_render(  ) {
+    $options = get_option( 'wp_s3_uploader_options' );
     $should_delete = isset($options['delete_local']) ? $options['delete_local'] : false;
     ?>
-    <input type='checkbox' name='aws_s3_pro_options[delete_local]' value='y' <?=checked( 'y', $should_delete, false )?>> 
+    <input type='checkbox' name='wp_s3_uploader_options[delete_local]' value='y' <?=checked( 'y', $should_delete, false )?>> 
     <span style="color: red;">WARNING: If checked local files in uploads folder will be deleted</span>
     <?php
 }
 
-function aws_s3_pro_option_section_callback(  ) {
+function wp_s3_uploader_option_section_callback(  ) {
     echo __( 'Enter your details', 'wordpress' );
 }
 
-function aws_s3_pro_option_page_render(  ) {
+function wp_s3_uploader_option_page_render(  ) {
     ?>
     <h1>WP S3 Uploader Settings</h1>
     <?php if(defined('WP_S3_UPLOADER')){
@@ -147,8 +196,8 @@ function aws_s3_pro_option_page_render(  ) {
     <form action='options.php' method='post'>
 
         <?php
-        settings_fields( 'aws_s3_pro' );
-        do_settings_sections( 'aws_s3_pro' );
+        settings_fields( 'wp_s3_uploader' );
+        do_settings_sections( 'wp_s3_uploader' );
         submit_button();
         ?>
 
