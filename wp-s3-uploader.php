@@ -8,6 +8,11 @@
  * Requires PHP: 7.x
  * Network: true
  */
+
+//  upload with `upload` direcoty intact
+// replace bucket url with site url
+
+
 require __DIR__.'/vendor/autoload.php';
 
 // aws sdk
@@ -52,16 +57,26 @@ if(is_admin()){
 if(isset($params['access_key'])){
 
     add_filter('wp_get_attachment_metadata', function($data){
-        // _jlog(isset($data['_wps3']));
+        
         Reg::set('_wps3', isset($data['_wps3']));
         
+        if(isset($data['_wps3'])){
+            $url = wp_upload_dir()['baseurl'] . '/' . $data['file'];
+            Reg::set('url', $url);
+        }else{
+            Reg::set('url', null);
+        }
+ 
+        
         return $data;
+
     });
+
 
     // change file url
     add_filter('wp_get_attachment_url', function($url){
-
-        if(stripos($url, 'uploads') !== false && Reg::get('_wps3') === true){
+        
+        if(Reg::get('url') === $url){
             return _s3p_public_url($url);
         }
 
@@ -69,19 +84,14 @@ if(isset($params['access_key'])){
         
     });
 
-    add_filter('wp_calculate_image_srcset', function($file){
-        
-        $newArr = [];
-
-        foreach($file as $k=>$v){
-            $url = $file[$k]['url'];
-            if(stripos($url, 'uploads') !== false && Reg::get('_wps3') === true){
-                $file[$k]['url'] = S3::getParams('url') . explode('/uploads', $url)[1];
-            }
+    add_filter('wp_get_attachment_image_attributes', function($attr) use ($params){
+        // _jlog($attr['src']);
+        if(Reg::get('_wps3') === true){
+            $baseUploadUrl = wp_upload_dir()['baseurl'];
+            $attr['src'] = str_replace($baseUploadUrl, $params['url'], $attr['src']);
+            $attr['srcset'] = str_replace($baseUploadUrl, $params['url'], $attr['srcset']);
         }
-        
-        
-        return $file;
+        return $attr;
     });
 
     // change file url before it is added to db
