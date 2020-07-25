@@ -99,6 +99,7 @@ function wp_s3_uploader_option_access_key_render(  ) {
         name='wp_s3_uploader_options[access_key]' 
         value='<?=$options['access_key']??''?>' 
         placeholder="access key" 
+        required="required" 
         size="60">
     <?php
 }
@@ -112,6 +113,7 @@ function wp_s3_uploader_option_secret_key_render(  ) {
         name='wp_s3_uploader_options[secret_key]' 
         value='<?=$options['secret_key']??''?>' 
         placeholder="secret key" 
+        required="required" 
         size="60">
     <?php
 }
@@ -124,6 +126,7 @@ function wp_s3_uploader_option_region_render(  ) {
         name='wp_s3_uploader_options[region]' 
         value='<?=$options['region']??''?>' 
         placeholder="region" 
+        required="required" 
         size="60">
 
     <p>- Required for Amazon, DigitalOcean, Scaleway and Google</p>
@@ -154,7 +157,8 @@ function wp_s3_uploader_option_bucket_render(  ) {
         type='text' name='wp_s3_uploader_options[bucket]' 
         value='<?=$options['bucket']??''?>' 
         size="60" 
-        placeholder="bucket name">
+        placeholder="bucket name" 
+        required="required" >
     <?php
 }
 
@@ -167,6 +171,7 @@ function wp_s3_uploader_option_url_render(  ) {
         name='wp_s3_uploader_options[url]' 
         value='<?=$options['url']??''?>' 
         size="60" 
+        required="required" 
         placeholder="bucket url">
 
     <p>- For amazon it is usually "https://s3.{REGION}.amazonaws.com/{BUCKET_NAME}"</p>

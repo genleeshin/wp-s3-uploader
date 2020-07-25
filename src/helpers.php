@@ -1,10 +1,10 @@
 <?php
 if ( !function_exists( '_s3p_view' ) ) {
-    function _s3p_view($file, $data = null){
+    function _s3p_view( $file, $data = null ){
 
         if(!$data) $data = [];
 
-        $file = str_replace('.', '/', $file);
+        $file = str_replace( '.', '/', $file );
 
         extract($data);
 
@@ -17,10 +17,10 @@ if ( !function_exists( '_s3p_view' ) ) {
     }
 }
 
-if ( !function_exists( '_s3p_error_notice' ) ) {
-    function _s3p_error_notice($message){
+if ( ! function_exists( '_s3p_error_notice' ) ) {
+    function _s3p_error_notice( $message ){
         // _jlog($message);
-        add_action( 'admin_notices', function() use (&$message){
+        add_action( 'admin_notices', function() use ( &$message ){
             ?>
             <div class="notice error my-acf-notice is-dismissible" >
                 <p><?php _e( $message ); ?></p>
@@ -32,26 +32,26 @@ if ( !function_exists( '_s3p_error_notice' ) ) {
     }
 }
 
-if ( !function_exists( '_s3p_public_url' ) ) {
-    function _s3p_public_url($url){
-        $parts = explode('/uploads/', $url);
-        if(isset($parts[1])){
-            return App\S3::getParams()['url'] . '/' . $parts[1];
+if ( ! function_exists( '_s3p_public_url' ) ) {
+    function _s3p_public_url( $url ){
+        $file = explode('/uploads', $url);
+        if(isset($file[1])) {
+            $url = App\S3::getParams( 'url' ) .  $file[1];
         }
-
+        
         return $url;
     
     }
 }
 
-if ( !function_exists( '_s3p_generate_key' ) ) {
-    function _s3p_generate_key($dirname, $file){
+if ( ! function_exists( '_s3p_generate_key' ) ) {
+    function _s3p_generate_key( $dirname, $file ){
         return $dirname . '/' . $file;
     }
 }
 
-if ( !function_exists( '_s3p_get_objects' ) ) {
-    function _s3p_get_objects(&$metadata, $action='put'){
+if ( ! function_exists( '_s3p_get_objects' ) ) {
+    function _s3p_get_objects( &$metadata, $action='put' ){
 
         $medias = [];
 
@@ -62,6 +62,7 @@ if ( !function_exists( '_s3p_get_objects' ) ) {
         $pathinfo = pathinfo($file['file']);
         $upload_dir = $pathinfo['dirname'];
         $key_base = explode('/uploads/', $upload_dir)[1];
+        $metadata['_wps3_upload_url'] = str_replace($pathinfo['dirname'], '', wp_upload_dir()['baseurl']);
         $metadata['key_base'] = $key_base;
 
         $ContentType = $action == 'put' ? $file['type'] : '';
@@ -81,7 +82,7 @@ if ( !function_exists( '_s3p_get_objects' ) ) {
     }
 }
 
-if ( !function_exists( '_s3p_objects_to_delete' ) ) {
+if ( ! function_exists( '_s3p_objects_to_delete' ) ) {
     function _s3p_objects_to_delete($metadata){
         $objects = [];
 
@@ -101,7 +102,7 @@ if ( !function_exists( '_s3p_objects_to_delete' ) ) {
     }
 }
 
-if ( !function_exists( '_s3p_delete_local_copies' ) ) {
+if ( ! function_exists( '_s3p_delete_local_copies' ) ) {
     function _s3p_delete_local_copies($objects){
         foreach($objects as $obj){
             if($obj['SourceFile'] && file_exists($obj['SourceFile'])){
@@ -113,7 +114,7 @@ if ( !function_exists( '_s3p_delete_local_copies' ) ) {
     }
 }
 
-if ( !function_exists( '_jlog' ) ) {
+if ( ! function_exists( '_jlog' ) ) {
     function _jlog($arr){
         error_log(json_encode($arr));
     }

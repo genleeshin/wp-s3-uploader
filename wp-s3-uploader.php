@@ -9,17 +9,12 @@
  * Network: true
  */
 
-//  upload with `upload` direcoty intact
-// replace bucket url with site url
-
-
 require __DIR__.'/vendor/autoload.php';
 
 // aws sdk
 
 use App\S3;
 use App\Reg;
-
 
 if(defined('WP_S3_UPLOADER')){
     $params = WP_S3_UPLOADER;
@@ -43,7 +38,7 @@ if(is_admin()){
     add_action( 'admin_init', 'wp_s3_uploader_options_init' );
 
     // links to plugin settings page
-    add_filter( "plugin_action_links_" . plugin_basename(__FILE__), function($links){
+    add_filter( "plugin_action_links_" . plugin_basename(__FILE__), function( $links ){
         $settings_link = '<a href="/wp-admin/options-general.php?page=wp-s3-uploader">' . __( 'Settings' ) . '</a>';
 
         array_push( $links, $settings_link );
@@ -54,23 +49,23 @@ if(is_admin()){
     register_uninstall_hook(__FILE__, '_wp_s3_uploader_uninstall');
 }
 
-if(isset($params['access_key'])){
+if( isset( $params['access_key'] ) ){
 
-    add_filter('wp_get_attachment_metadata', function($data){
+    add_filter('wp_get_attachment_metadata', function( $data ) {
         
         Reg::set('_wps3', isset($data['_wps3']));
-        
+
         if(isset($data['_wps3'])){
             $url = wp_upload_dir()['baseurl'] . '/' . $data['file'];
-            Reg::set('url', $url);
+            Reg::set( 'url', $url );
         }else{
-            Reg::set('url', null);
+            Reg::set( 'url', null );
         }
  
         
         return $data;
 
-    });
+    } );
 
 
     // change file url
@@ -84,20 +79,20 @@ if(isset($params['access_key'])){
         
     });
 
-    add_filter('wp_get_attachment_image_attributes', function($attr) use ($params){
+    add_filter('wp_get_attachment_image_attributes', function( $attr ) {
         // _jlog($attr['src']);
         if(Reg::get('_wps3') === true){
-            $baseUploadUrl = wp_upload_dir()['baseurl'];
-            $attr['src'] = str_replace($baseUploadUrl, $params['url'], $attr['src']);
-            $attr['srcset'] = str_replace($baseUploadUrl, $params['url'], $attr['srcset']);
+            
+            $attr['src'] = _s3p_public_url( $attr['src']) ;
+            $attr['srcset'] = _s3p_public_url( $attr['srcset'] );
         }
         return $attr;
     });
 
     // change file url before it is added to db
     add_filter('wp_handle_upload', function($file){
-        $parts = explode('/uploads/', $file['url']);
-        $file['url'] = S3::getParams()['url'] . '/' . $parts[1];
+        // $parts = explode('/uploads/', $file['url']);
+        // $file['url'] = S3::getParams()['url'] . '/' . $parts[1];
         Reg::set('file', $file);
         return $file;
     });
@@ -127,8 +122,6 @@ if(isset($params['access_key'])){
         }
 
         return $metadata;
-
-
     }
 
     // on delete attachement
